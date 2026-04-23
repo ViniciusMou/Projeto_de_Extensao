@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seu Carrinho - LifeStyle</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>LifeStyle</h1>
+        <a href="index.html" class="btn-voltar-carrinho"><i class="fas fa-arrow-left"></i> <span>Voltar aos produtos</span></a>
+    </header>
+
+    <main class="cart-page-main">
+        <div class="progress-bar-container">
+            <div class="progress-step active">
+                <span class="step-number">1</span>
+                <span class="step-text">Carrinho</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step">
+                <span class="step-number">2</span>
+                <span class="step-text">Identificação</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step">
+                <span class="step-number">3</span>
+                <span class="step-text">Pagamento</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step">
+                <span class="step-number">4</span>
+                <span class="step-text">Finalizar</span>
+            </div>
+        </div>
+
+        <section class="cart-section section-box">
+            <h2 class="section-title">Seu Carrinho</h2>
+            <div id="itens-carrinho" class="cart-items-container">
+                </div>
+            <p id="empty-cart-message" class="no-products-message" style="display: none;">Seu carrinho está vazio.</p>
+        </section>
+
+        <section class="delivery-section section-box">
+            <h2 class="section-title">Calcular Frete</h2>
+            <div class="cep-input-group">
+                <input type="text" id="cep-input" placeholder="Digite seu CEP" maxlength="9" onkeyup="formatCEP(this)">
+                <button class="calculate-btn">Calcular</button>
+            </div>
+            <p id="shipping-result"></p>
+        </section>
+
+        <section class="coupon-section section-box">
+            <h2 class="section-title">Cupom de Desconto</h2>
+            <div class="coupon-input-group">
+                <input type="text" id="coupon-input" placeholder="Digite seu cupom">
+                <button class="apply-btn">Aplicar</button>
+            </div>
+            <p id="coupon-result"></p>
+        </section>
+
+        <section class="summary-section section-box">
+            <h2 class="section-title">Resumo da Compra</h2>
+            <div class="summary-details">
+                <p>Subtotal: <span id="subtotal">R$ 0,00</span></p>
+                <p>Frete: <span id="shipping-cost">R$ 0,00</span></p>
+                <p>Desconto: <span id="discount">R$ 0,00</span></p>
+                <h3>Total: <span id="total-carrinho">R$ 0,00</span></h3>
+            </div>
+            <button class="primary-btn" onclick="finalizar()">Continuar para Identificação</button>
+        </section>
+    </main>
+
+    <div id="remove-confirm-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Confirmar Remoção</h2>
+            <p>Tem certeza que deseja remover este item do carrinho?</p>
+            <div class="modal-actions">
+                <button id="confirm-remove-btn" class="primary-btn">Sim, Remover</button>
+                <button id="cancel-remove-btn" class="secondary-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Esta lista 'produtosBase' é usada para buscar informações adicionais do produto no carrinho
+        // como a imagem, caso o item do carrinho não tenha todas as informações salvas no localStorage.
+        // É bom ter essa lista base para consulta.
+        const produtosBase = [
+            { id: 1, nome: "Tênis Esportivo Pro", categoria: "tenis", preco: 299.90, imagem: "img/tenis_esportivo_pro.jpg", cores: ["Preto", "Branco"], tamanhos: ["38", "39", "40", "41", "42"], estilo: "Esportivo" },
+            { id: 2, nome: "Camiseta Algodão Premium", categoria: "roupas", preco: 89.90, imagem: "img/camiseta_algodao_premium.jpg", cores: ["Azul", "Vermelho"], tamanhos: ["P", "M", "G", "GG"], estilo: "Casual" },
+            { id: 3, nome: "Boné Aba Reta", categoria: "acessorios", preco: 49.90, imagem: "img/bone_aba_reta.jpg", cores: ["Preto", "Cinza"], tamanhos: ["Único"], estilo: "Urbano" },
+            { id: 4, nome: "Calça Jeans Slim Fit", categoria: "roupas", preco: 189.90, imagem: "img/calca_jeans_slim_fit.jpg", cores: ["Azul Escuro", "Preto"], tamanhos: ["38", "40", "42", "44"], estilo: "Casual" },
+            { id: 5, nome: "Tênis Casual Urbano", categoria: "tenis", preco: 249.90, imagem: "img/tenis_casual_urbano.jpg", cores: ["Branco", "Bege"], tamanhos: ["36", "37", "38", "39", "40"], estilo: "Urbano" },
+            { id: 6, nome: "Meia Esportiva (3 pares)", categoria: "acessorios", preco: 29.90, imagem: "img/meia_esportiva.jpg", cores: ["Branco", "Preto"], tamanhos: ["Único"], estilo: "Esportivo" },
+            { id: 7, nome: "Jaqueta Corta-Vento", categoria: "roupas", preco: 359.90, imagem: "img/jaqueta_corta_vento.jpg", cores: ["Preto", "Verde Militar"], tamanhos: ["P", "M", "G", "GG"], estilo: "Esportivo" },
+            { id: 8, nome: "Óculos de Sol Classic", categoria: "acessorios", preco: 129.90, imagem: "img/oculos_sol_classic.jpg", cores: ["Preto", "Marrom"], tamanhos: ["Único"], estilo: "Casual" },
+        ];
+
+
+        let shippingCost = 0;
+        let discountValue = 0;
+        let itemToRemoveIndex = -1; // Variável para armazenar o índice do item a ser removido
+
+        function formatCEP(input) {
+            let value = input.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5, 8);
+            }
+            input.value = value;
+        }
+
+        document.querySelector('.calculate-btn').addEventListener('click', () => {
+            const cep = document.getElementById('cep-input').value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                // Simulação de cálculo de frete
+                shippingCost = 15.00; // Valor fixo para simulação
+                document.getElementById('shipping-result').innerText = `Frete para ${cep}: R$ ${shippingCost.toFixed(2).replace('.', ',')}`;
+            } else {
+                shippingCost = 0;
+                document.getElementById('shipping-result').innerText = "CEP inválido. Digite 8 dígitos.";
+            }
+            document.getElementById('shipping-cost').innerText = `R$ ${shippingCost.toFixed(2).replace('.', ',')}`;
+            updateTotal();
+        });
+
+        document.querySelector('.apply-btn').addEventListener('click', () => {
+            const coupon = document.getElementById('coupon-input').value.toUpperCase();
+            if (coupon === "DESCONTO10") {
+                discountValue = 0.10; // 10% de desconto
+                document.getElementById('coupon-result').innerText = "Cupom aplicado! Você recebeu 10% de desconto.";
+            } else {
+                discountValue = 0;
+                document.getElementById('coupon-result').innerText = "Cupom inválido ou expirado.";
+            }
+            document.getElementById('discount').innerText = `R$ ${(getSubtotal() * discountValue).toFixed(2).replace('.', ',')}`;
+            updateTotal();
+        });
+
+        function getSubtotal() {
+            let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+            return carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
+        }
+
+        function updateTotal() {
+            const subtotal = getSubtotal();
+            const totalDiscount = subtotal * discountValue;
+            const total = subtotal + shippingCost - totalDiscount;
+
+            document.getElementById('subtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('discount').innerText = `R$ ${totalDiscount.toFixed(2).replace('.', ',')}`;
+            document.getElementById('total-carrinho').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        function carregarCarrinho() {
+            const itensCarrinhoContainer = document.getElementById("itens-carrinho");
+            itensCarrinhoContainer.innerHTML = ""; // Limpa os itens atuais
+            let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+            if (carrinho.length === 0) {
+                document.getElementById("empty-cart-message").style.display = "block";
+                document.querySelector('.primary-btn').disabled = true; // Desabilita o botão de finalizar
+                document.querySelector('.primary-btn').textContent = "Carrinho Vazio";
+            } else {
+                document.getElementById("empty-cart-message").style.display = "none";
+                document.querySelector('.primary-btn').disabled = false;
+                document.querySelector('.primary-btn').textContent = "Continuar para Identificação";
+                carrinho.forEach((item, index) => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.classList.add("cart-item");
+                    // O link para o produto agora passa o ID para que a index.html possa filtrar
+                    itemDiv.innerHTML = `
+                        <a href="index.html?product_id=${item.id}" class="item-image-link" aria-label="Ver detalhes do produto ${item.nome}">
+                            <img src="${item.imagem}" alt="${item.nome}">
+                        </a>
+                        <div class="item-details">
+                            <a href="index.html?product_id=${item.id}" class="item-name-link"><h4>${item.nome}</h4></a>
+                            <p class="product-info">Tamanho: ${item.tamanho} | Cor: ${item.cor}</p>
+                            <div class="item-quantity-controls">
+                                <button class="qty-btn decrease-qty" data-index="${index}" aria-label="Diminuir quantidade de ${item.nome}">-</button>
+                                <span class="item-qty" data-index="${index}">${item.quantidade}</span>
+                                <button class="qty-btn increase-qty" data-index="${index}" aria-label="Aumentar quantidade de ${item.nome}">+</button>
+                            </div>
+                        </div>
+                        <div class="item-prices">
+                            <p class="col-unit-price">R$ ${item.preco.toFixed(2).replace('.', ',')}</p>
+                            <p class="col-total-price">R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</p>
+                            <button class="delete-btn" data-index="${index}" aria-label="Remover ${item.nome} do carrinho">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `;
+                    itensCarrinhoContainer.appendChild(itemDiv);
+                });
+
+                // Adiciona listeners para os botões de quantidade e exclusão
+                document.querySelectorAll('.increase-qty').forEach(btn => {
+                    btn.addEventListener('click', (e) => alterarQuantidade(parseInt(e.target.dataset.index), 1));
+                });
+                document.querySelectorAll('.decrease-qty').forEach(btn => {
+                    btn.addEventListener('click', (e) => alterarQuantidade(parseInt(e.target.dataset.index), -1));
+                });
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => showRemoveConfirmModal(parseInt(e.target.dataset.index)));
+                });
+            }
+            updateTotal(); // Atualiza os totais após carregar os itens
+        }
+
+        function alterarQuantidade(index, delta) {
+            let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+            if (carrinho[index]) {
+                const qtySpan = document.querySelector(`.item-qty[data-index="${index}"]`);
+                qtySpan.classList.add('quantity-changing'); // Adiciona classe para animação
+
+                carrinho[index].quantidade = (carrinho[index].quantidade || 1) + delta;
+                if (carrinho[index].quantidade <= 0) {
+                    showRemoveConfirmModal(index);
+                } else {
+                    localStorage.setItem("carrinho", JSON.stringify(carrinho));
+                    carregarCarrinho(); // Recarrega para atualizar os totais
+                }
+                setTimeout(() => {
+                    qtySpan.classList.remove('quantity-changing'); // Remove a classe após a animação
+                }, 300); // Tempo da animação no CSS
+            }
+        }
+
+        function showRemoveConfirmModal(index) {
+            itemToRemoveIndex = index;
+            document.getElementById('remove-confirm-modal').style.display = 'block';
+        }
+
+        function remover(index) {
+            let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+            carrinho.splice(index, 1);
+            localStorage.setItem("carrinho", JSON.stringify(carrinho));
+            carregarCarrinho(); // Recarrega o carrinho após remover
+            document.getElementById('remove-confirm-modal').style.display = 'none'; // Esconde o modal
+            itemToRemoveIndex = -1; // Reseta o índice
+        }
+
+        function finalizar() {
+            const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+            if (carrinho.length === 0) {
+                alert("Seu carrinho está vazio. Adicione produtos antes de finalizar a compra.");
+                return;
+            }
+            window.location.href = "identificacao.html"; // Redireciona para a página de identificação
+        }
+
+        // Event Listeners para o Modal de Confirmação
+        document.getElementById('confirm-remove-btn').addEventListener('click', () => {
+            if (itemToRemoveIndex !== -1) {
+                remover(itemToRemoveIndex);
+            }
+        });
+
+        document.getElementById('cancel-remove-btn').addEventListener('click', () => {
+            document.getElementById('remove-confirm-modal').style.display = 'none';
+            itemToRemoveIndex = -1;
+        });
+
+        document.querySelector('#remove-confirm-modal .close-button').addEventListener('click', () => {
+            document.getElementById('remove-confirm-modal').style.display = 'none';
+            itemToRemoveIndex = -1;
+        });
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('remove-confirm-modal');
+            if (event.target === modal) {
+                modal.style.display = "none";
+                itemToRemoveIndex = -1;
+            }
+        }
+
+        window.onload = carregarCarrinho;
+    </script>
+</body>
+</html>
+
+
+
+

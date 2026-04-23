@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pedido Confirmado - LifeStyle</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .confirmation-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .confirmation-icon {
+      font-size: 64px;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+    }
+    .confirmation-container h2 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    .confirmation-container p {
+      font-size: 1.1em;
+      color: #555;
+      margin-bottom: 8px;
+    }
+    .confirmation-actions {
+      margin-top: 30px;
+    }
+    .confirmation-actions a {
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>LifeStyle</h1>
+    <a href="index.html" class="btn-voltar-carrinho"><i class="fas fa-home"></i> Início</a>
+  </header>
+
+  <main class="cart-page-main">
+    <div class="confirmation-container">
+      <div class="confirmation-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2>Pagamento Aprovado!</h2>
+      <p>Seu pedido foi confirmado com sucesso.</p>
+      <p>Número do Pedido: <strong id="order-id">#LS123456</strong></p>
+      <p>Data: <strong id="order-date"></strong></p>
+      <p>Valor Pago: <strong id="order-total"></strong></p>
+      <p>Forma de Pagamento: <strong id="order-payment"></strong></p>
+      <div class="confirmation-actions">
+        <a href="index.html" class="primary-btn">Continuar Comprando</a>
+        <a href="meus_pedidos.html" class="secondary-btn">Ver Meus Pedidos</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const resumo = JSON.parse(localStorage.getItem('lastOrderSummary'));
+    if (resumo) {
+      document.getElementById('order-id').textContent = resumo.orderNumber;
+      document.getElementById('order-date').textContent = new Date(resumo.orderDate).toLocaleDateString('pt-BR');
+      document.getElementById('order-total').textContent = `R$ ${resumo.totalPaid.toFixed(2).replace('.', ',')}`;
+      document.getElementById('order-payment').textContent = resumo.paymentMethod;
+    }
+  </script>
+</body>
+</html>

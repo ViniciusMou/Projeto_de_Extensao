@@ -1,11 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>LifeStyle - Sua Loja Online</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    hello word!
+    <header>
+        <h1>LifeStyle</h1>
+        <a href="carrinho.html" class="btn-ver-carrinho">
+            <i class="fas fa-shopping-cart"></i> <span id="cart-item-count">0</span>
+        </a>
+    </header>
+
+    <main>
+        <div class="filters-container">
+            <input type="text" id="busca" placeholder="Buscar produtos..." aria-label="Buscar produtos">
+            <select id="categoria" aria-label="Filtrar por categoria">
+                <option value="">Todas as Categorias</option>
+                <option value="tenis">Tênis</option>
+                <option value="roupas">Roupas</option>
+                <option value="acessorios">Acessórios</option>
+            </select>
+            <button id="clear-filters-btn" class="secondary-btn">Limpar Filtros</button>
+        </div>
+        <p id="product-count-message"></p>
+
+        <section id="produtos">
+            </section>
+    </main>
+
+    <script>
+        const produtos = [
+            { id: 1, nome: "Nike Dunk Panda", categoria: "tenis", preco: 999.99, imagem: "https://imgnike-a.akamaihd.net/768x768/01708551A10.jpg", cores: ["Preto", "Branco"], tamanhos: ["38", "39", "40", "41", "42"], estilo: "Esportivo" },
+            { id: 2, nome: "Camiseta Nike", categoria: "roupas", preco: 89.90, imagem: "https://imgnike-a.akamaihd.net/360x360/0162697UA8.jpg", cores: ["Azul", "Vermelho"], tamanhos: ["P", "M", "G", "GG"], estilo: "Casual" },
+            { id: 3, nome: "Boné Aba Curvada", categoria: "acessorios", preco: 49.90, imagem: "https://imgnike-a.akamaihd.net/768x768/026470IDA2.jpg", cores: ["Preto", "Cinza"], tamanhos: ["Único"], estilo: "Urbano" },
+            { id: 4, nome: "Calça de Moletom Slim ", categoria: "roupas", preco: 189.90, imagem: "https://imgnike-a.akamaihd.net/360x360/0289577TA10.jpg", cores: ["Azul Escuro", "Preto"], tamanhos: ["38", "40", "42", "44"], estilo: "Casual" },
+            { id: 5, nome: "Tênis Casual TN", categoria: "tenis", preco: 2490.90, imagem: "https://imgnike-a.akamaihd.net/360x360/09249115A1.jpg", cores: ["Branco", "Bege"], tamanhos: ["36", "37", "38", "39", "40"], estilo: "Urbano" },
+            { id: 6, nome: "Meia Esportiva (3 pares)", categoria: "acessorios", preco: 29.90, imagem: "https://imgnike-a.akamaihd.net/360x360/01576751A4.jpg", cores: ["Branco", "Preto"], tamanhos: ["Único"], estilo: "Esportivo" },
+            { id: 7, nome: "Jaqueta Nike", categoria: "roupas", preco: 359.90, imagem: "https://imgnike-a.akamaihd.net/768x768/027051IDA2.jpg", cores: ["Preto", "Verde Militar"], tamanhos: ["P", "M", "G", "GG"], estilo: "Esportivo" },
+            { id: 8, nome: "Bolsa Nike", categoria: "acessorios", preco: 129.90, imagem: "https://imgnike-a.akamaihd.net/1920x1920/025594IGA10.jpg ", cores: ["Preto", "Marrom"], tamanhos: ["Único"], estilo: "Casual" },
+        ];
+
+        function exibirProdutos(listaProdutos) {
+            const containerProdutos = document.getElementById("produtos");
+            containerProdutos.innerHTML = ""; // Limpa a lista antes de exibir
+
+            if (listaProdutos.length === 0) {
+                containerProdutos.innerHTML = "<p class='no-products-message'>Nenhum produto encontrado com os filtros aplicados.</p>";
+                document.getElementById('product-count-message').innerText = "0 produtos encontrados.";
+                return;
+            }
+
+            listaProdutos.forEach(produto => {
+                const produtoDiv = document.createElement("div");
+                produtoDiv.classList.add("product-card");
+                produtoDiv.innerHTML = `
+                    <img src="${produto.imagem}" alt="${produto.nome}">
+                    <h3>${produto.nome}</h3>
+                    <p class="product-price">R$ ${produto.preco.toFixed(2).replace('.', ',')}</p>
+                    <div class="product-options">
+                        <select class="product-size" aria-label="Selecionar tamanho para ${produto.nome}">
+                            ${produto.tamanhos.map(t => `<option value="${t}">${t}</option>`).join('')}
+                        </select>
+                        <select class="product-color" aria-label="Selecionar cor para ${produto.nome}">
+                            ${produto.cores.map(c => `<option value="${c}">${c}</option>`).join('')}
+                        </select>
+                    </div>
+                    <button class="add-to-cart-btn" data-product-id="${produto.id}">Adicionar ao Carrinho</button>
+                `;
+                containerProdutos.appendChild(produtoDiv);
+            });
+
+            document.getElementById('product-count-message').innerText = `${listaProdutos.length} produtos encontrados.`;
+
+            // Adiciona listeners aos novos botões "Adicionar ao Carrinho"
+            document.querySelectorAll(".add-to-cart-btn").forEach(button => {
+                button.addEventListener("click", adicionarAoCarrinho);
+            });
+        }
+
+        function adicionarAoCarrinho(event) {
+            const button = event.target;
+            const productId = parseInt(button.dataset.productId);
+            const produtoSelecionado = produtos.find(p => p.id === productId);
+
+            const productCard = button.closest('.product-card');
+            const tamanhoSelecionado = productCard.querySelector('.product-size').value;
+            const corSelecionada = productCard.querySelector('.product-color').value;
+
+            if (produtoSelecionado) {
+                let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+                // Verifica se o item (com mesmo ID, tamanho e cor) já existe no carrinho
+                const itemExistente = carrinho.find(item =>
+                    item.id === produtoSelecionado.id &&
+                    item.tamanho === tamanhoSelecionado &&
+                    item.cor === corSelecionada
+                );
+
+                if (itemExistente) {
+                    itemExistente.quantidade++;
+                } else {
+                    carrinho.push({
+                        id: produtoSelecionado.id,
+                        nome: produtoSelecionado.nome,
+                        preco: produtoSelecionado.preco,
+                        imagem: produtoSelecionado.imagem,
+                        tamanho: tamanhoSelecionado,
+                        cor: corSelecionada,
+                        estilo: produtoSelecionado.estilo,
+                        quantidade: 1
+                    });
+                }
+
+                localStorage.setItem("carrinho", JSON.stringify(carrinho));
+                updateCartItemCount(); // Atualiza a contagem no cabeçalho
+
+                // Animação do botão
+                button.textContent = "Adicionado!";
+                button.classList.add("added-feedback");
+                setTimeout(() => {
+                    button.textContent = "Adicionar ao Carrinho";
+                    button.classList.remove("added-feedback");
+                }, 1500); // Volta ao normal após 1.5 segundos
+            }
+        }
+
+        function filtrarProdutos() {
+            const termoBusca = document.getElementById("busca").value.toLowerCase();
+            const categoriaSelecionada = document.getElementById("categoria").value;
+
+            const produtosFiltrados = produtos.filter(produto => {
+                const correspondeBusca = produto.nome.toLowerCase().includes(termoBusca);
+                const correspondeCategoria = categoriaSelecionada === "" || produto.categoria === categoriaSelecionada;
+                return correspondeBusca && correspondeCategoria;
+            });
+
+            exibirProdutos(produtosFiltrados);
+        }
+
+        function clearFilters() {
+            document.getElementById("busca").value = "";
+            document.getElementById("categoria").value = "";
+            filtrarProdutos(); // Recarrega os produtos sem filtro
+        }
+
+        function updateCartItemCount() {
+            const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+            const totalItems = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+            document.getElementById('cart-item-count').textContent = totalItems;
+        }
+
+        // Adiciona listeners para os filtros
+        document.getElementById("busca").addEventListener("input", filtrarProdutos);
+        document.getElementById("categoria").addEventListener("change", filtrarProdutos);
+        document.getElementById("clear-filters-btn").addEventListener("click", clearFilters);
+
+        // Carrega os produtos e atualiza a contagem do carrinho na inicialização
+        window.onload = () => {
+            exibirProdutos(produtos);
+            updateCartItemCount();
+        };
+    </script>
 </body>
 </html>
