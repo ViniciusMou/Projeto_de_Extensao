@@ -1,5 +1,5 @@
 Projeto Loja
-Descrição
+
 
 Sistema web de loja virtual desenvolvido em grupo durante a faculdade, com foco em prática de front-end e lógica de programação, simulando um sistema simples de e-commerce.
 
