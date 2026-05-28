@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Identificação | Triunfando com Cristo</title>
+
+    <link rel="stylesheet"
+        href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body onload="checkLogin()">
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="header-left">
+
+            <a href="index.html"
+                class="btn-home">
+
+                <h1>Triunfando com Cristo</h1>
+
+            </a>
+
+        </div>
+
+        <div class="header-right">
+
+            <a href="identificacao.html"
+                id="login-link"
+                class="btn-login">
+
+                <i class="fas fa-user"></i>
+
+                <span>Entrar / Cadastrar</span>
+
+            </a>
+
+            <div id="user-logged"
+                style="display:none;">
+
+                <span id="user-name"></span>
+
+                <button onclick="logout()"
+                    class="btn-logout">
+
+                    <i class="fas fa-sign-out-alt"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <a href="carrinho.html"
+            class="btn-voltar-carrinho">
+
+            <i class="fas fa-arrow-left"></i>
+
+            <span>Voltar ao carrinho</span>
+
+        </a>
+
+    </header>
+
+    <!-- MAIN -->
+
+    <main class="cart-page-main">
+
+        <!-- PROGRESS -->
+
+        <div class="progress-bar-container">
+
+            <div class="progress-step complete">
+
+                <span class="step-number">
+
+                    <i class="fas fa-check"></i>
+
+                </span>
+
+                <span class="step-text">
+
+                    Carrinho
+
+                </span>
+
+            </div>
+
+            <div class="progress-line complete"></div>
+
+            <div class="progress-step active">
+
+                <span class="step-number">
+
+                    2
+
+                </span>
+
+                <span class="step-text">
+
+                    Identificação
+
+                </span>
+
+            </div>
+
+            <div class="progress-line"></div>
+
+            <div class="progress-step">
+
+                <span class="step-number">
+
+                    3
+
+                </span>
+
+                <span class="step-text">
+
+                    Pagamento
+
+                </span>
+
+            </div>
+
+            <div class="progress-line"></div>
+
+            <div class="progress-step">
+
+                <span class="step-number">
+
+                    4
+
+                </span>
+
+                <span class="step-text">
+
+                    Finalizar
+
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- CONTAINER -->
+
+        <section class="identification-container">
+
+            <!-- LOGIN -->
+
+            <div class="auth-box">
+
+                <h2>
+
+                    Já sou cliente
+
+                </h2>
+
+                <form id="login-form">
+
+                    <div class="input-group">
+
+                        <label>
+
+                            E-mail
+
+                        </label>
+
+                        <input type="email"
+                            id="login-email"
+                            placeholder="Digite seu e-mail"
+                            required>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+
+                            Senha
+
+                        </label>
+
+                        <input type="password"
+                            id="login-password"
+                            placeholder="Digite sua senha"
+                            required>
+
+                    </div>
+
+                    <div class="remember-line">
+
+                        <a href="#">
+
+                            Esqueci minha senha
+
+                        </a>
+
+                    </div>
+
+                    <button type="submit"
+                        class="primary-btn">
+
+                        Entrar e Continuar
+
+                    </button>
+
+                </form>
+
+            </div>
+
+            <!-- CADASTRO -->
+
+            <div class="auth-box">
+
+                <h2>
+
+                    Criar conta
+
+                </h2>
+
+                <form id="register-form">
+
+                    <div class="input-group">
+
+                        <label>
+
+                            Nome Completo
+
+                        </label>
+
+                        <input type="text"
+                            id="register-name"
+                            placeholder="Seu nome completo"
+                            required>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+
+                            E-mail
+
+                        </label>
+
+                        <input type="email"
+                            id="register-email"
+                            placeholder="Digite seu e-mail"
+                            required>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+
+                            CPF
+
+                        </label>
+
+                        <input type="text"
+                            id="register-cpf"
+                            placeholder="000.000.000-00"
+                            maxlength="14"
+                            onkeyup="formatCPF(this)"
+                            required>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+
+                            Telefone
+
+                        </label>
+
+                        <input type="text"
+                            id="register-phone"
+                            placeholder="(11) 99999-9999"
+                            maxlength="15"
+                            onkeyup="formatPhone(this)"
+                            required>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+
+                            Senha
+
+                        </label>
+
+                        <input type="password"
+                            id="register-password"
+                            placeholder="Mínimo 6 caracteres"
+                            required>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+
+                            Confirmar Senha
+
+                        </label>
+
+                        <input type="password"
+                            id="register-confirm-password"
+                            placeholder="Confirme sua senha"
+                            required>
+
+                    </div>
+
+                    <div class="checkbox-line">
+
+                        <input type="checkbox"
+                            id="privacy-policy"
+                            required>
+
+                        <label for="privacy-policy">
+
+                            Li e aceito a Política de Privacidade
+
+                        </label>
+
+                    </div>
+
+                    <button type="submit"
+                        class="primary-btn">
+
+                        Cadastrar e Continuar
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+
+        // =========================
+        // LOGIN CHECK
+        // =========================
+
+        function checkLogin() {
+
+            const usuario =
+                localStorage.getItem(
+                    "usuario_nome"
+                );
+
+            const loginLink =
+                document.getElementById(
+                    "login-link"
+                );
+
+            const userLogged =
+                document.getElementById(
+                    "user-logged"
+                );
+
+            const userName =
+                document.getElementById(
+                    "user-name"
+                );
+
+            if (usuario) {
+
+                loginLink.style.display =
+                    "none";
+
+                userLogged.style.display =
+                    "flex";
+
+                userName.innerText =
+                    "Olá, " + usuario;
+
+            } else {
+
+                loginLink.style.display =
+                    "flex";
+
+                userLogged.style.display =
+                    "none";
+
+            }
+
+        }
+
+        // =========================
+        // LOGOUT
+        // =========================
+
+        function logout() {
+
+            localStorage.removeItem(
+                "usuario_nome"
+            );
+
+            localStorage.removeItem(
+                "usuario_email"
+            );
+
+            localStorage.removeItem(
+                "usuario_id"
+            );
+
+            localStorage.removeItem(
+                "usuario_logado"
+            );
+
+            window.location.href =
+                "index.html";
+
+        }
+
+        // =========================
+        // FORMAT CPF
+        // =========================
+
+        function formatCPF(input) {
+
+            let value =
+                input.value.replace(/\D/g, '');
+
+            value =
+                value.replace(
+                    /(\d{3})(\d)/,
+                    '$1.$2'
+                );
+
+            value =
+                value.replace(
+                    /(\d{3})(\d)/,
+                    '$1.$2'
+                );
+
+            value =
+                value.replace(
+                    /(\d{3})(\d{1,2})$/,
+                    '$1-$2'
+                );
+
+            input.value = value;
+
+        }
+
+        // =========================
+        // FORMAT PHONE
+        // =========================
+
+        function formatPhone(input) {
+
+            let value =
+                input.value.replace(/\D/g, '');
+
+            value =
+                value.replace(
+                    /^(\d{2})(\d)/g,
+                    '($1) $2'
+                );
+
+            value =
+                value.replace(
+                    /(\d)(\d{4})$/,
+                    '$1-$2'
+                );
+
+            input.value = value;
+
+        }
+
+        // =========================
+        // LOGIN
+        // =========================
+
+        document.getElementById(
+            "login-form"
+        ).addEventListener(
+            "submit",
+            function (e) {
+
+                e.preventDefault();
+
+                const email =
+                    document.getElementById(
+                        "login-email"
+                    ).value;
+
+                const senha =
+                    document.getElementById(
+                        "login-password"
+                    ).value;
+
+                const usuarioSalvo =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "usuarios"
+                        )
+                    ) || [];
+
+                const usuario =
+                    usuarioSalvo.find(
+                        user =>
+                            user.email === email
+                            &&
+                            user.senha === senha
+                    );
+
+                if (usuario) {
+
+                    localStorage.setItem(
+                        "usuario_nome",
+                        usuario.nome
+                    );
+
+                    localStorage.setItem(
+                        "usuario_email",
+                        usuario.email
+                    );
+
+                    localStorage.setItem(
+                        "usuario_logado",
+                        "true"
+                    );
+
+                    alert(
+                        "Login realizado com sucesso!"
+                    );
+
+                    window.location.href =
+                        "pagamento.html";
+
+                } else {
+
+                    alert(
+                        "E-mail ou senha inválidos."
+                    );
+
+                }
+
+            }
+        );
+
+        // =========================
+        // CADASTRO
+        // =========================
+
+        document.getElementById(
+            "register-form"
+        ).addEventListener(
+            "submit",
+            function (e) {
+
+                e.preventDefault();
+
+                const nome =
+                    document.getElementById(
+                        "register-name"
+                    ).value;
+
+                const email =
+                    document.getElementById(
+                        "register-email"
+                    ).value;
+
+                const cpf =
+                    document.getElementById(
+                        "register-cpf"
+                    ).value;
+
+                const telefone =
+                    document.getElementById(
+                        "register-phone"
+                    ).value;
+
+                const senha =
+                    document.getElementById(
+                        "register-password"
+                    ).value;
+
+                const confirmarSenha =
+                    document.getElementById(
+                        "register-confirm-password"
+                    ).value;
+
+                if (senha.length < 6) {
+
+                    alert(
+                        "A senha precisa ter no mínimo 6 caracteres."
+                    );
+
+                    return;
+
+                }
+
+                if (senha !== confirmarSenha) {
+
+                    alert(
+                        "As senhas não coincidem."
+                    );
+
+                    return;
+
+                }
+
+                let usuarios =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "usuarios"
+                        )
+                    ) || [];
+
+                const emailExistente =
+                    usuarios.find(
+                        user =>
+                            user.email === email
+                    );
+
+                if (emailExistente) {
+
+                    alert(
+                        "Este e-mail já está cadastrado."
+                    );
+
+                    return;
+
+                }
+
+                usuarios.push({
+
+                    nome,
+                    email,
+                    cpf,
+                    telefone,
+                    senha
+
+                });
+
+                localStorage.setItem(
+                    "usuarios",
+                    JSON.stringify(usuarios)
+                );
+
+                localStorage.setItem(
+                    "usuario_nome",
+                    nome
+                );
+
+                localStorage.setItem(
+                    "usuario_email",
+                    email
+                );
+
+                localStorage.setItem(
+                    "usuario_logado",
+                    "true"
+                );
+
+                alert(
+                    "Cadastro realizado com sucesso!"
+                );
+
+                window.location.href =
+                    "pagamento.html";
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

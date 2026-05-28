@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Pagamento | Triunfando com Cristo</title>
+
+    <link rel="stylesheet"
+        href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body onload="checkLogin()">
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="header-left">
+
+            <a href="index.html"
+                class="btn-home">
+
+                <h1>Triunfando com Cristo</h1>
+
+            </a>
+
+        </div>
+
+        <div class="header-right">
+
+            <a href="identificacao.html"
+                id="login-link"
+                class="btn-login">
+
+                <i class="fas fa-user"></i>
+
+                <span>Entrar / Cadastrar</span>
+
+            </a>
+
+            <div id="user-logged"
+                style="display:none;">
+
+                <span id="user-name"></span>
+
+                <button onclick="logout()"
+                    class="btn-logout">
+
+                    <i class="fas fa-sign-out-alt"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <a href="identificacao.html"
+            class="btn-voltar-carrinho">
+
+            <i class="fas fa-arrow-left"></i>
+
+            <span>Voltar à identificação</span>
+
+        </a>
+
+    </header>
+
+    <!-- MAIN -->
+
+    <main class="cart-page-main">
+
+        <!-- PROGRESS -->
+
+        <div class="progress-bar-container">
+
+            <div class="progress-step complete">
+
+                <span class="step-number">
+
+                    <i class="fas fa-check"></i>
+
+                </span>
+
+                <span class="step-text">
+
+                    Carrinho
+
+                </span>
+
+            </div>
+
+            <div class="progress-line complete"></div>
+
+            <div class="progress-step complete">
+
+                <span class="step-number">
+
+                    <i class="fas fa-check"></i>
+
+                </span>
+
+                <span class="step-text">
+
+                    Identificação
+
+                </span>
+
+            </div>
+
+            <div class="progress-line complete"></div>
+
+            <div class="progress-step active">
+
+                <span class="step-number">
+
+                    3
+
+                </span>
+
+                <span class="step-text">
+
+                    Pagamento
+
+                </span>
+
+            </div>
+
+            <div class="progress-line"></div>
+
+            <div class="progress-step">
+
+                <span class="step-number">
+
+                    4
+
+                </span>
+
+                <span class="step-text">
+
+                    Finalizar
+
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- PAGAMENTO -->
+
+        <section class="payment-container">
+
+            <!-- PIX -->
+
+            <div class="payment-box">
+
+                <div class="pix-header">
+
+                    <i class="fas fa-qrcode"></i>
+
+                    <h2>
+
+                        Pagamento via PIX
+
+                    </h2>
+
+                </div>
+
+                <p class="pix-description">
+
+                    Escaneie o QR Code abaixo
+                    utilizando o aplicativo do seu banco.
+
+                </p>
+
+                <div class="pix-qrcode-box">
+
+                    <img
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=TriunfandoComCristo"
+                        alt="QR Code PIX"
+                        class="pix-qrcode">
+
+                </div>
+
+                <div class="pix-key-box">
+
+                    <span>
+
+                        Chave PIX
+
+                    </span>
+
+                    <strong id="pix-key">
+
+                        492.515.998-40
+
+                    </strong>
+
+                </div>
+
+                <button class="primary-btn copy-pix-btn">
+
+                    <i class="fas fa-copy"></i>
+
+                    Copiar Chave PIX
+
+                </button>
+
+            </div>
+
+            <!-- RESUMO -->
+
+            <div class="payment-box">
+
+                <h2 class="payment-title">
+
+                    Resumo da Compra
+
+                </h2>
+
+                <div class="summary-details">
+
+                    <p>
+
+                        Subtotal
+
+                        <span id="summary-subtotal">
+
+                            R$ 0,00
+
+                        </span>
+
+                    </p>
+
+                    <p>
+
+                        Frete
+
+                        <span id="summary-shipping">
+
+                            R$ 0,00
+
+                        </span>
+
+                    </p>
+
+                    <p>
+
+                        Desconto
+
+                        <span id="summary-discount">
+
+                            R$ 0,00
+
+                        </span>
+
+                    </p>
+
+                    <h3>
+
+                        Total
+
+                        <span id="summary-total">
+
+                            R$ 0,00
+
+                        </span>
+
+                    </h3>
+
+                </div>
+
+                <button
+                    class="primary-btn finalize-btn"
+                    onclick="finalizarCompra()">
+
+                    Finalizar Compra
+
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+
+        let subtotal = 0;
+
+        let shippingCost = 15;
+
+        let discountValue = 0;
+
+        let total = 0;
+
+        // =========================
+        // LOGIN
+        // =========================
+
+        function checkLogin() {
+
+            const usuario =
+                localStorage.getItem(
+                    "usuario_nome"
+                );
+
+            const loginLink =
+                document.getElementById(
+                    "login-link"
+                );
+
+            const userLogged =
+                document.getElementById(
+                    "user-logged"
+                );
+
+            const userName =
+                document.getElementById(
+                    "user-name"
+                );
+
+            if (usuario) {
+
+                loginLink.style.display =
+                    "none";
+
+                userLogged.style.display =
+                    "flex";
+
+                userName.innerText =
+                    "Olá, " + usuario;
+
+            } else {
+
+                loginLink.style.display =
+                    "flex";
+
+                userLogged.style.display =
+                    "none";
+
+            }
+
+            carregarResumo();
+
+        }
+
+        // =========================
+        // LOGOUT
+        // =========================
+
+        function logout() {
+
+            localStorage.removeItem(
+                "usuario_nome"
+            );
+
+            localStorage.removeItem(
+                "usuario_email"
+            );
+
+            localStorage.removeItem(
+                "usuario_id"
+            );
+
+            localStorage.removeItem(
+                "usuario_logado"
+            );
+
+            window.location.href =
+                "index.html";
+
+        }
+
+        // =========================
+        // RESUMO
+        // =========================
+
+        function carregarResumo() {
+
+            const carrinho =
+                JSON.parse(
+                    localStorage.getItem(
+                        "carrinho"
+                    )
+                ) || [];
+
+            subtotal =
+                carrinho.reduce(
+                    (total, item) =>
+
+                        total +
+                        (item.preco * item.quantidade),
+
+                    0
+                );
+
+            discountValue =
+                subtotal * 0.10;
+
+            total =
+                subtotal +
+                shippingCost -
+                discountValue;
+
+            document.getElementById(
+                "summary-subtotal"
+            ).innerText =
+                `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+
+            document.getElementById(
+                "summary-shipping"
+            ).innerText =
+                `R$ ${shippingCost.toFixed(2).replace('.', ',')}`;
+
+            document.getElementById(
+                "summary-discount"
+            ).innerText =
+                `R$ ${discountValue.toFixed(2).replace('.', ',')}`;
+
+            document.getElementById(
+                "summary-total"
+            ).innerText =
+                `R$ ${total.toFixed(2).replace('.', ',')}`;
+
+        }
+
+        // =========================
+        // COPIAR PIX
+        // =========================
+
+        document.querySelector(
+            ".copy-pix-btn"
+        ).addEventListener(
+            "click",
+            () => {
+
+                const pixKey =
+                    document.getElementById(
+                        "pix-key"
+                    ).innerText;
+
+                navigator.clipboard
+                    .writeText(pixKey);
+
+                alert(
+                    "Chave PIX copiada!"
+                );
+
+            }
+        );
+
+        // =========================
+        // FINALIZAR
+        // =========================
+
+        function finalizarCompra() {
+
+            alert(
+                "Compra finalizada com sucesso!"
+            );
+
+            localStorage.removeItem(
+                "carrinho"
+            );
+
+            window.location.href =
+                "index.html";
+
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Detalhes do Produto</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        *{
+            box-sizing: border-box;
+        }
+
+        body{
+            font-family: Arial;
+            background: linear-gradient(135deg, #27d399, #0fb9b1);
+            margin: 0;
+        }
+
+        .produto-container{
+            max-width: 1200px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            gap: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .produto-imagem img{
+            width: 450px;
+            border-radius: 20px;
+        }
+
+        .produto-info{
+            flex: 1;
+        }
+
+        .produto-info h1{
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .miniaturas{
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .miniaturas img{
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .miniaturas img:hover{
+            border-color: #27d399;
+            transform: scale(1.05);
+        }
+
+        .produto-info{
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .produto-info h1{
+            font-size: 40px;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .preco{
+            font-size: 32px;
+            color: #27ae60;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .descricao{
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .produto-info select{
+            width: 100%;
+            max-width: 250px;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .btn-carrinho{
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: black;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-carrinho:hover{
+            background: #333;
+        }
+
+        /* ========================= */
+        /* RESPONSIVIDADE */
+        /* ========================= */
+
+        @media (max-width: 992px){
+
+            .produto-container{
+                gap: 25px;
+                padding: 25px;
+            }
+
+            .produto-info h1{
+                font-size: 32px;
+            }
+
+            .preco{
+                font-size: 28px;
+            }
+
+        }
+
+    @media (max-width: 768px){
+
+    .produto-container{
+        flex-direction: column;
+        padding: 20px;
+        margin: 20px 15px;
+    }
+
+            .produto-imagem{
+                max-width: 100%;
+            }
+
+            .produto-info{
+                width: 100%;
+            }
+
+            .produto-info h1{
+                font-size: 28px;
+            }
+
+            .preco{
+                font-size: 26px;
+            }
+
+            .btn-carrinho{
+                max-width: 100%;
+            }
+
+            .produto-info select{
+                max-width: 100%;
+            }
+
+        }
+
+        @media (max-width: 480px){
+
+            .produto-container{
+                border-radius: 15px;
+                padding: 15px;
+            }
+
+            .produto-info h1{
+                font-size: 24px;
+            }
+
+            .preco{
+                font-size: 22px;
+            }
+
+            .descricao{
+                font-size: 14px;
+            }
+
+            .miniaturas{
+                justify-content: center;
+            }
+
+            .miniaturas img{
+                width: 65px;
+                height: 65px;
+            }
+
+            .btn-carrinho{
+                font-size: 16px;
+                padding: 14px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body onload="checkLogin()">
+
+<header>
+
+    <div class="header-left">
+
+        <a href="index.html"
+            class="btn-home">
+
+            <h1>Lifestyle</h1>
+
+        </a>
+
+    </div>
+
+    <a href="identificacao.html"
+        id="login-link"
+        class="btn-login">
+
+        <i class="fas fa-user"></i>
+
+        <span>Entrar / Cadastrar</span>
+
+    </a>
+
+    <div id="user-logged"
+        style="display:none;">
+
+        <span id="user-name"></span>
+
+        <button onclick="logout()"
+            class="btn-logout">
+
+            <i class="fas fa-sign-out-alt"></i>
+
+        </button>
+
+    </div>
+
+    <a href="carrinho.html"
+        class="btn-ver-carrinho">
+
+        <i class="fas fa-shopping-cart"></i>
+
+        <span id="cart-item-count">0</span>
+
+    </a>
+
+</header>
+
+<div class="produto-container">
+
+    <div class="produto-imagem">
+
+        <img id="produto-img">
+
+        <div class="miniaturas"
+            id="miniaturas"></div>
+
+    </div>
+
+    <div class="produto-info">
+
+        <h1 id="produto-nome"></h1>
+
+        <div class="preco"
+            id="produto-preco"></div>
+
+        <p class="descricao"
+            id="produto-descricao"></p>
+
+        <h3>Tamanho</h3>
+
+        <select id="tamanho"></select>
+
+        <h3>Cor</h3>
+
+        <select id="cor"></select>
+
+        <br><br>
+
+        <button class="btn-carrinho"
+            onclick="adicionarCarrinho()">
+
+            Adicionar ao Carrinho
+
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+const produtos = [
+
+{
+    id: 1,
+    nome: "Tênis Nike Branco",
+    categoria: "tenis",
+    preco: 399.90,
+
+    imagens: [
+        "ROUPAS/nike branco.jpeg",
+        "ROUPAS/nike branco 2.jpeg",
+        "ROUPAS/nike branco 3.jpeg"
+    ],
+
+    descricao: "Tênis Nike branco com design moderno e acabamento premium. Desenvolvido para oferecer conforto, leveza e estilo no dia a dia. Ideal para compor looks casuais e urbanos com muito mais personalidade.",
+    tamanhos: ["41"],
+    cores: ["Branco"]
+},
+
+{
+    id: 2,
+    nome: "Camiseta Premium",
+    categoria: "camisetas",
+    preco: 49.90,
+
+    imagens: [
+        "ROUPAS/camiseta preta.jpeg",
+        "ROUPAS/camiseta preta 2.jpeg"
+    ],
+
+    descricao: "Camiseta premium confeccionada com tecido macio e confortável. Modelagem moderna que combina perfeitamente com qualquer estilo, trazendo elegância e praticidade para o cotidiano.",
+    tamanhos: ["GG"],
+    cores: ["Preta"]
+},
+
+{
+    id: 3,
+    nome: "Calça Preta Premium",
+    categoria: "calcas",
+    preco: 80.90,
+
+    imagens: [
+        "ROUPAS/calca preta 1.jpeg",
+        "ROUPAS/calca preta 2.jpg",
+        "ROUPAS/calca preta 3.jpg"
+    ],
+
+    descricao: "Calça preta premium com caimento moderno e tecido confortável. Perfeita para ocasiões casuais ou composições mais sofisticadas, garantindo estilo e versatilidade.",
+    tamanhos: ["G"],
+    cores: ["Preta"]
+},
+
+{
+    id: 4,
+    nome: "Calça Bege Premium",
+    categoria: "calcas",
+    preco: 80.90,
+
+    imagens: [
+        "ROUPAS/calca bege 1.jpeg",
+        "ROUPAS/calca bege 2.jpg",
+        "ROUPAS/calca bege 3.jpg"
+    ],
+
+    descricao: "Calça bege premium com visual sofisticado e acabamento moderno. Desenvolvida para proporcionar conforto e liberdade de movimento sem abrir mão do estilo.",
+    tamanhos: ["G"],
+    cores: ["Bege"]
+},
+
+{
+    id: 5,
+    nome: "Tênis Nike Azul",
+    categoria: "tenis",
+    preco: 299.90,
+
+    imagens: [
+        "ROUPAS/nike azul.jpeg",
+        "ROUPAS/nike azul 2.jpeg"
+    ],
+
+    descricao: "Tênis Nike azul com design esportivo e moderno. Possui estrutura leve, confortável e resistente, ideal para uso diário e combinações urbanas..",
+    tamanhos: ["42"],
+    cores: ["Azul"]
+},
+
+{
+    id: 6,
+    nome: "Calça Jeans escuro",
+    categoria: "calcas",
+    preco: 80.90,
+        imagens: [
+        "ROUPAS/calca jeans escuro 1.jpg",
+        "ROUPAS/calca jeans escuro 2.jpg",
+        "ROUPAS/calca jeans escuro 3.jpg"
+    ],
+    descricao: "Calça jeans premium com visual sofisticado e acabamento moderno. Desenvolvida para proporcionar conforto e liberdade de movimento sem abrir mão do estilo.",
+    tamanhos: ["42"],
+    cores: ["Azul"]
+},
+
+{
+    id: 7,
+    nome: "Calça Jeans claro",
+    categoria: "calcas",
+    preco: 80.90,
+        imagens: [
+        "ROUPAS/calca jeans claro 1.jpg",
+        "ROUPAS/calca jeans claro 2.jpg",
+        "ROUPAS/calca jeans claro 3.jpg"
+    ],
+    descricao: "Calça jeans claro premium com visual sofisticado e acabamento moderno. Desenvolvida para proporcionar conforto e liberdade de movimento sem abrir mão do estilo.",
+    tamanhos: ["42"],
+    cores: ["Azul"]
+}
+
+];
+
+const params =
+    new URLSearchParams(window.location.search);
+
+const id =
+    parseInt(params.get("id"));
+
+const produto =
+    produtos.find(p => p.id === id);
+
+document.getElementById("produto-img").src =
+    produto.imagens[0];
+
+const miniaturas =
+    document.getElementById("miniaturas");
+
+produto.imagens.forEach(imagem => {
+
+    const img =
+        document.createElement("img");
+
+    img.src = imagem;
+
+    img.addEventListener("click", () => {
+
+        document.getElementById(
+            "produto-img"
+        ).src = imagem;
+
+    });
+
+    miniaturas.appendChild(img);
+
+});
+
+document.getElementById(
+    "produto-nome"
+).innerText = produto.nome;
+
+document.getElementById(
+    "produto-preco"
+).innerText =
+    "R$ " +
+    produto.preco
+    .toFixed(2)
+    .replace(".", ",");
+
+document.getElementById(
+    "produto-descricao"
+).innerText =
+    produto.descricao;
+
+document.getElementById(
+    "tamanho"
+).innerHTML =
+
+produto.tamanhos.map(t =>
+
+    `<option>${t}</option>`
+
+).join("");
+
+document.getElementById(
+    "cor"
+).innerHTML =
+
+produto.cores.map(c =>
+
+    `<option>${c}</option>`
+
+).join("");
+
+function adicionarCarrinho(){
+
+    let carrinho = JSON.parse(
+        localStorage.getItem("carrinho")
+    ) || [];
+
+    const produtoCarrinho = {
+
+        id: produto.id,
+
+        nome: produto.nome,
+
+        preco: produto.preco,
+
+        /* IMAGEM PRINCIPAL */
+        imagem: produto.imagens[0],
+
+        tamanho: document.getElementById(
+            "tamanho"
+        ).value,
+
+        cor: document.getElementById(
+            "cor"
+        ).value,
+
+        quantidade: 1
+
+    };
+
+    carrinho.push(produtoCarrinho);
+
+    localStorage.setItem(
+        "carrinho",
+        JSON.stringify(carrinho)
+    );
+
+    alert("Produto adicionado ao carrinho!");
+
+}
+
+function checkLogin(){
+
+    const usuario =
+        localStorage.getItem("usuario_nome");
+
+    const loginLink =
+        document.getElementById("login-link");
+
+    const userLogged =
+        document.getElementById("user-logged");
+
+    const userName =
+        document.getElementById("user-name");
+
+    if(usuario){
+
+        loginLink.style.display = "none";
+
+        userLogged.style.display = "block";
+
+        userName.innerText =
+            "Olá, " + usuario;
+
+    } else {
+
+        loginLink.style.display = "block";
+
+        userLogged.style.display = "none";
+
+    }
+
+}
+
+function logout() {
+
+    // Remove dados do usuário
+    localStorage.removeItem("usuario_nome");
+    localStorage.removeItem("usuario_email");
+    localStorage.removeItem("usuario_id");
+    localStorage.removeItem("usuario_logado");
+
+    // Opcional:
+    // sessionStorage.clear();
+
+    // Redireciona para página inicial
+    window.location.href = "index.html";
+}
+
+</script>
+
+</body>
+</html>
