@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento - LifeStyle</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>LifeStyle</h1>
+        <a href="identificacao.html" class="btn-voltar-carrinho"><i class="fas fa-arrow-left"></i> <span>Voltar à identificação</span></a>
+    </header>
+
+    <main class="cart-page-main">
+        <div class="progress-bar-container">
+            <div class="progress-step complete"> <span class="step-number"><i class="fas fa-check"></i></span>
+                <span class="step-text">Carrinho</span>
+            </div>
+            <div class="progress-line complete"></div>
+            <div class="progress-step complete"> <span class="step-number"><i class="fas fa-check"></i></span>
+                <span class="step-text">Identificação</span>
+            </div>
+            <div class="progress-line complete"></div>
+            <div class="progress-step active">
+                <span class="step-number">3</span>
+                <span class="step-text">Pagamento</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step">
+                <span class="step-number">4</span>
+                <span class="step-text">Finalizar</span>
+            </div>
+        </div>
+
+        <section class="payment-section section-box">
+            <h2 class="section-title">Escolha a Forma de Pagamento</h2>
+            <div class="payment-methods">
+                <label class="radio-container">
+                    Cartão de Crédito
+                    <input type="radio" name="payment_method" value="credit_card" checked>
+                    <span class="radio-checkmark"></span>
+                </label>
+                <label class="radio-container">
+                    PIX
+                    <input type="radio" name="payment_method" value="pix">
+                    <span class="radio-checkmark"></span>
+                </label>
+                <label class="radio-container">
+                    Boleto Bancário
+                    <input type="radio" name="payment_method" value="boleto">
+                    <span class="radio-checkmark"></span>
+                </label>
+            </div>
+
+            <form id="card-details-form" class="card-details-form">
+                <h3>Dados do Cartão</h3>
+                <div class="input-group">
+                    <label for="card-number">Número do Cartão:</label>
+                    <input type="text" id="card-number" required placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+                    <div class="card-flags" id="card-flags">
+                        </div>
+                    <span class="error-message" id="card-number-error"></span>
+                </div>
+                <div class="input-group">
+                    <label for="card-name">Nome Impresso no Cartão:</label>
+                    <input type="text" id="card-name" required placeholder="NOME COMPLETO">
+                    <span class="error-message" id="card-name-error"></span>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="card-expiry">Validade (MM/AA):</label>
+                        <input type="text" id="card-expiry" required placeholder="MM/AA" maxlength="5">
+                        <span class="error-message" id="card-expiry-error"></span>
+                    </div>
+                    <div class="input-group">
+                        <label for="card-cvv">CVV:</label>
+                        <input type="text" id="card-cvv" required placeholder="XXX" maxlength="4">
+                        <span class="error-message" id="card-cvv-error"></span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="installments">Número de Parcelas:</label>
+                    <select id="installments" required>
+                        </select>
+                    <p id="installment-value-display" class="installment-info"></p>
+                    <span class="error-message" id="installments-error"></span>
+                </div>
+            </form>
+
+            <div id="pix-details" style="display: none;" class="payment-details-box">
+                <h3>Pagamento via PIX</h3>
+                <p>Escaneie o QR Code ou copie a chave PIX abaixo para finalizar seu pagamento.</p>
+                <img src="https://pt.activebarcode.com/codes/imagesmainexample/qrcode.gif" alt="QR Code PIX" class="pix-qr-code">
+                <p class="pix-key">Chave PIX: <strong>492.515.998-40</strong></p>
+                <button class="primary-btn copy-pix-btn"><i class="fas fa-copy"></i> Copiar Chave PIX</button>
+            </div>
+
+            <div id="boleto-details" style="display: none;" class="payment-details-box">
+                <h3>Pagamento via Boleto Bancário</h3>
+                <p>Seu boleto será gerado ao finalizar a compra. Você pode pagá-lo em qualquer banco ou casa lotérica.</p>
+                <p>Data de vencimento: **2 dias úteis** após a compra.</p>
+                <button class="primary-btn download-boleto-btn"><i class="fas fa-download"></i> Gerar e Imprimir Boleto</button>
+            </div>
+        </section>
+
+        <section class="summary-section section-box">
+            <h2 class="section-title">Resumo da Compra</h2>
+            <div class="summary-details">
+                <p>Subtotal: <span id="summary-subtotal">R$ 0,00</span></p>
+                <p>Frete: <span id="summary-shipping-cost">R$ 0,00</span></p>
+                <p>Desconto: <span id="summary-discount">R$ 0,00</span></p>
+                <h3>Total: <span id="summary-total">R$ 0,00</span></h3>
+            </div>
+            <button class="primary-btn" id="finalize-purchase-btn" onclick="finalizarCompra()">Finalizar Compra</button>
+            <div class="loading-spinner" id="loading-spinner"></div>
+        </section>
+    </main>
+
+    <script>
+        let subtotal = 0;
+        let shippingCost = 0;
+        let discountValue = 0;
+        let totalCartValue = 0;
+
+        // Funções de Validação de Formulário
+        function displayError(inputElement, message) {
+            const errorSpan = document.getElementById(`${inputElement.id}-error`);
+            if (errorSpan) {
+                errorSpan.textContent = message;
+                inputElement.classList.add('input-error');
+            }
+        }
+
+        function clearError(inputElement) {
+            const errorSpan = document.getElementById(`${inputElement.id}-error`);
+            if (errorSpan) {
+                errorSpan.textContent = '';
+                inputElement.classList.remove('input-error');
+            }
+        }
+
+        function validateCardNumber(input) {
+            const value = input.value.replace(/\s/g, ''); // Remove espaços
+            if (!/^\d{13,19}$/.test(value)) {
+                displayError(input, 'Número de cartão inválido.');
+                return false;
+            }
+            clearError(input);
+            return true;
+        }
+
+        function validateCardName(input) {
+            if (input.value.trim().length < 3) {
+                displayError(input, 'Nome inválido.');
+                return false;
+            }
+            clearError(input);
+            return true;
+        }
+
+        function validateCardExpiry(input) {
+            const value = input.value;
+            const parts = value.split('/');
+            if (parts.length !== 2 || parts[0].length !== 2 || parts[1].length !== 2) {
+                displayError(input, 'Formato MM/AA inválido.');
+                return false;
+            }
+            const month = parseInt(parts[0], 10);
+            const year = parseInt(parts[1], 10) + 2000; // Assume ano no século 21
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth() + 1; // Mês é 0-index
+
+            if (month < 1 || month > 12 || year < currentYear || (year === currentYear && month < currentMonth)) {
+                displayError(input, 'Data de validade inválida ou expirada.');
+                return false;
+            }
+            clearError(input);
+            return true;
+        }
+
+        function validateCardCVV(input) {
+            const value = input.value;
+            if (!/^\d{3,4}$/.test(value)) {
+                displayError(input, 'CVV inválido.');
+                return false;
+            }
+            clearError(input);
+            return true;
+        }
+
+        // Máscaras de Input
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 '); // Adiciona espaço a cada 4 dígitos
+            input.value = value.trim();
+            identifyCardBrand(input.value);
+            validateCardNumber(input);
+        }
+
+        function formatCardExpiry(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            input.value = value;
+            validateCardExpiry(input);
+        }
+
+        function formatCardCVV(input) {
+            let value = input.value.replace(/\D/g, '');
+            input.value = value;
+            validateCardCVV(input);
+        }
+
+        // Identificação da Bandeira do Cartão
+        function identifyCardBrand(cardNumber) {
+            const cleanNumber = cardNumber.replace(/\s/g, '');
+            const cardFlagsContainer = document.getElementById('card-flags');
+            cardFlagsContainer.innerHTML = ''; // Limpa ícones anteriores
+
+            let brand = '';
+            if (/^4/.test(cleanNumber)) brand = 'Visa';
+            else if (/^5[1-5]/.test(cleanNumber)) brand = 'Mastercard';
+            else if (/^3[47]/.test(cleanNumber)) brand = 'Amex';
+            else if (/^6(?:011|5)/.test(cleanNumber)) brand = 'Discover';
+            else if (/^3(?:0[0-5]|[68])/.test(cleanNumber)) brand = 'Diners Club';
+            else if (/^35(?:2[89]|[3-8][0-9])/.test(cleanNumber)) brand = 'JCB';
+
+            if (brand) {
+                const icon = document.createElement('i');
+                icon.classList.add('fab');
+                icon.classList.add(`fa-cc-${brand.toLowerCase().replace(' ', '-')}`);
+                icon.title = brand;
+                cardFlagsContainer.appendChild(icon);
+            }
+        }
+
+        // Carregar Resumo da Compra
+        function carregarResumo() {
+            const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+            subtotal = carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
+            shippingCost = parseFloat(localStorage.getItem("shippingCost") || 0); // Pegar do localStorage se calculou no carrinho
+            discountValue = parseFloat(localStorage.getItem("discountValue") || 0); // Pegar do localStorage se aplicou no carrinho
+
+            const totalDiscount = subtotal * discountValue;
+            totalCartValue = subtotal + shippingCost - totalDiscount;
+
+            document.getElementById('summary-subtotal').innerText = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('summary-shipping-cost').innerText = `R$ ${shippingCost.toFixed(2).replace('.', ',')}`;
+            document.getElementById('summary-discount').innerText = `R$ ${totalDiscount.toFixed(2).replace('.', ',')}`;
+            document.getElementById('summary-total').innerText = `R$ ${totalCartValue.toFixed(2).replace('.', ',')}`;
+
+            carregarOpcoesParcelas();
+        }
+
+        // Carregar Opções de Parcelas
+        function carregarOpcoesParcelas() {
+            const installmentsSelect = document.getElementById('installments');
+            installmentsSelect.innerHTML = '';
+            const maxInstallments = 12; // Exemplo: até 12x
+
+            for (let i = 1; i <= maxInstallments; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                const valuePerInstallment = totalCartValue / i;
+                option.innerText = `${i}x de R$ ${valuePerInstallment.toFixed(2).replace('.', ',')}`;
+                if (i === 1) option.innerText += ' (à vista)';
+                installmentsSelect.appendChild(option);
+            }
+            updateInstallmentValueDisplay(); // Atualiza ao carregar
+        }
+
+        function updateInstallmentValueDisplay() {
+            const installmentsSelect = document.getElementById('installments');
+            const selectedInstallments = parseInt(installmentsSelect.value);
+            const valuePerInstallment = totalCartValue / selectedInstallments;
+            document.getElementById('installment-value-display').innerText = `${selectedInstallments}x de R$ ${valuePerInstallment.toFixed(2).replace('.', ',')}`;
+        }
+
+        // Simula a finalização da compra
+        function finalizarCompra() {
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            let isValid = true;
+
+            if (paymentMethod === 'credit_card') {
+                isValid = validateCardNumber(document.getElementById('card-number')) && isValid;
+                isValid = validateCardName(document.getElementById('card-name')) && isValid;
+                isValid = validateCardExpiry(document.getElementById('card-expiry')) && isValid;
+                isValid = validateCardCVV(document.getElementById('card-cvv')) && isValid;
+            }
+
+            if (!isValid) {
+                alert('Por favor, corrija os erros nos dados do pagamento.');
+                return;
+            }
+
+            const finalizeBtn = document.getElementById('finalize-purchase-btn');
+            const loadingSpinner = document.getElementById('loading-spinner');
+
+            finalizeBtn.disabled = true;
+            finalizeBtn.textContent = 'Processando...';
+            loadingSpinner.style.display = 'block';
+
+            setTimeout(() => {
+                alert("Compra finalizada com sucesso (simulado)! Redirecionando para a página de confirmação...");
+                localStorage.removeItem("carrinho"); // Limpar o carrinho após a compra
+                window.location.href = "bemvindo.html"; // Redirecionar para a página de boas-vindas
+            }, 2000); // Simula um atraso de 2 segundos
+        }
+
+        // Lógica para mostrar/esconder detalhes do método de pagamento
+        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('card-details-form').style.display = 'none';
+                document.getElementById('pix-details').style.display = 'none';
+                document.getElementById('boleto-details').style.display = 'none';
+
+                if (this.value === 'credit_card') {
+                    document.getElementById('card-details-form').style.display = 'block';
+                } else if (this.value === 'pix') {
+                    document.getElementById('pix-details').style.display = 'block';
+                } else if (this.value === 'boleto') {
+                    document.getElementById('boleto-details').style.display = 'block';
+                }
+            });
+        });
+
+        // Event Listeners para Inputs de Cartão
+        document.getElementById('card-number').addEventListener('input', (e) => formatCardNumber(e.target));
+        document.getElementById('card-name').addEventListener('input', (e) => validateCardName(e.target));
+        document.getElementById('card-expiry').addEventListener('input', (e) => formatCardExpiry(e.target));
+        document.getElementById('card-cvv').addEventListener('input', (e) => formatCardCVV(e.target));
+        document.getElementById('installments').addEventListener('change', updateInstallmentValueDisplay);
+
+        // Event Listener para copiar chave PIX (simulado)
+        document.querySelector('.copy-pix-btn').addEventListener('click', () => {
+            const pixKey = document.querySelector('.pix-key strong').textContent;
+            navigator.clipboard.writeText(pixKey).then(() => {
+                alert('Chave PIX copiada para a área de transferência!');
+            }).catch(err => {
+                console.error('Erro ao copiar chave PIX: ', err);
+            });
+        });
+
+        // Inicializa o resumo ao carregar a página
+        document.addEventListener('DOMContentLoaded', carregarResumo);
+        // Exibe o formulário de cartão de crédito por padrão
+        document.getElementById('card-details-form').style.display = 'block';
+    </script>
+</body>
+</html>
