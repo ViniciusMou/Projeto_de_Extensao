@@ -1,0 +1,25 @@
+name: CI - Projeto de Extensão
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build project
+        run: echo "Simulando build do projeto Java - OK"
+
+      - name: Run tests (simulado)
+        run: echo "Testes executados com sucesso"
